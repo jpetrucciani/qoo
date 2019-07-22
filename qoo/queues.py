@@ -1,5 +1,5 @@
 """
-queue class
+qoo queue and job class
 """
 import boto3
 import os
@@ -19,8 +19,12 @@ class Job(object):
         self._md5 = self._data["MD5OfBody"]
         self._id = self._data["MessageId"]
         self._body = jsonl(self._data["Body"])
+        self._attributes = self._data["Attributes"]
         self._received_at = float(time.time())
         self.elapsed = time.time() - self._body["created_at"]
+        self.approximate_receive_count = int(
+            self._attributes["ApproximateReceiveCount"]
+        )
         for key in self._body:
             setattr(self, key, self._body[key])
         self.handle = self._data["ReceiptHandle"]

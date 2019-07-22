@@ -1,11 +1,25 @@
 """
 pytest the qoo functionality
 """
+import json
 import os
-import qoo
 import pytest
+import qoo
+import sys
 import time
 from moto import mock_sqs
+
+
+def dbg(text):
+    """debug printer for tests"""
+    if isinstance(text, dict):
+        text = json.dumps(text, sort_keys=True, indent=2)
+    caller = sys._getframe(1)
+    print("")
+    print("----- {} line {} ------".format(caller.f_code.co_name, caller.f_lineno))
+    print(text)
+    print("-----")
+    print("")
 
 
 def test_login():
@@ -32,8 +46,8 @@ def test_queues_can_be_created():
 @mock_sqs
 def test_fifo_queues_can_be_created():
     """test that we can create a queue"""
-    queue = qoo.create("test_queue", fifo=True)
-    assert queue.name == "test_queue"
+    queue = qoo.create("test_queue.fifo", fifo=True)
+    assert queue.name == "test_queue.fifo"
     assert queue.created_at < time.time()
     assert queue.maximum_message_size == 262144
     assert queue.fifo
@@ -60,6 +74,7 @@ def test_can_send_and_receive_job(queue):
     job = queue.receive()
     assert job
     assert job.md5_matches
+    assert job.approximate_receive_count == 1
 
 
 def test_can_delete_job(queue_with_job):

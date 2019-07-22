@@ -31,7 +31,7 @@ def queue() -> Generator:
 def fifo_queue() -> Generator:
     """fixture that provides a fifo SQS qoo."""
     with mock_sqs():
-        yield qoo.create("qoo-fifo", fifo=True)
+        yield qoo.create("qoo.fifo", fifo=True)
 
 
 @pytest.fixture
