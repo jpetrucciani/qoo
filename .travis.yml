@@ -1,14 +1,20 @@
 dist: xenial
+sudo: false
 language: python
-python:
-  - 3.5
-  - 3.6
-  - 3.7
+matrix:
+  include:
+    - python: 3.5
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36
+    - python: 3.7
+      env: TOXENV=py37
+before_install:
+  - sudo rm -f /etc/boto.cfg
 install:
-  - pip install -r requirements.txt
-  - pip install -r requirements-dev.txt
-script:
-  - make
+  - pip install tox pipenv
+  - pipenv install
+script: tox
 deploy:
   provider: pypi
   user: jacobi

@@ -1,5 +1,5 @@
 """
-worker class
+worker class - not yet used
 """
 from time import sleep
 
@@ -27,6 +27,5 @@ class Worker(object):
                     job.run()
                     queue.remove_job(job)
 
-            if burst:
-                break
-            sleep(wait_seconds)
+            if not burst:
+                sleep(wait_seconds)

@@ -20,3 +20,7 @@ class QooException(Exception):
 
 class InvalidCredentials(QooException):
     """invalid credentials were passed for a queue object"""
+
+
+class FailedToCreateQueue(QooException):
+    """attempting to create a queue has failed"""
