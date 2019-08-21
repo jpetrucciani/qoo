@@ -49,10 +49,10 @@ Basic Usage
 
    import qoo
 
-   # list bucket names
+   # list SQS queue names
    qoo.list()
 
-   # get an existing bucket
+   # get an existing queue
    queue = qoo.get("$QUEUE_NAME")
 
    # or create a queue
