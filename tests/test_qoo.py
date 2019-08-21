@@ -75,6 +75,7 @@ def test_can_send_and_receive_job(queue):
     assert job
     assert job.md5_matches
     assert job.approximate_receive_count == 1
+    assert job.elapsed > 0.0
 
 
 def test_can_delete_job(queue_with_job):

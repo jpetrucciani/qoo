@@ -13,7 +13,7 @@ REQUIRED = ["boto3"]
 
 setup(
     name="qoo",
-    version="0.0.1",
+    version="0.0.2",
     description=("A simple library for interacting with Amazon SQS."),
     long_description=LONG_DESCRIPTION,
     author="Jacobi Petrucciani",
@@ -24,7 +24,6 @@ setup(
     packages=["qoo"],
     install_requires=REQUIRED,
     classifiers=[
-        "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",

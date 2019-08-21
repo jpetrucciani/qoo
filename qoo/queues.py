@@ -6,7 +6,7 @@ import os
 import time
 import hashlib
 from qoo.utils import jsond, jsonl
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 
 class Job(object):
@@ -20,14 +20,15 @@ class Job(object):
         self._id = self._data["MessageId"]
         self._body = jsonl(self._data["Body"])
         self._attributes = self._data["Attributes"]
+        self._sent_at = float(self._attributes["SentTimestamp"]) / 1000
         self._received_at = float(time.time())
-        self.elapsed = time.time() - self._body["created_at"]
+        self.elapsed = self._received_at - self._sent_at
         self.approximate_receive_count = int(
             self._attributes["ApproximateReceiveCount"]
         )
         for key in self._body:
             setattr(self, key, self._body[key])
-        self.handle = self._data["ReceiptHandle"]
+        self._handle = self._data["ReceiptHandle"]
 
     def __str__(self) -> str:
         """return a human-friendly object representation"""
@@ -37,13 +38,13 @@ class Job(object):
         """repr"""
         return self.__str__()
 
-    def __del__(self) -> dict:
+    def __del__(self) -> Dict:
         """del keyword for the job"""
         return self.delete()
 
-    def delete(self) -> dict:
+    def delete(self) -> Dict:
         """delete this object"""
-        return self._queue.delete_job(self.handle)
+        return self._queue.delete_job(self._handle)
 
     @property
     def md5_matches(self) -> bool:
@@ -138,20 +139,23 @@ class Queue(object):
         using the kwarg attributes, send a job to this queue.
         pass job attributes to set the message body
         """
-        attributes.update({"created_at": int(time.time())})
         response = self._client.send_message(
             MessageBody=jsond(attributes), QueueUrl=self._queue_url
         )
         return response["MessageId"]
 
     def receive_jobs(
-        self, max_messages: int = None, wait_time: int = None
+        self,
+        max_messages: int = None,
+        wait_time: int = None,
+        attribute_names: str = "All",
     ) -> List[Job]:
         """receive a list of jobs from the queue"""
         jobs = self._client.receive_message(
             QueueUrl=self._queue_url,
             MaxNumberOfMessages=max_messages if max_messages else self._max_messages,
             WaitTimeSeconds=wait_time if wait_time else self._wait_time,
+            AttributeNames=[attribute_names],
         )
         if "Messages" not in jobs:
             return []
@@ -162,7 +166,7 @@ class Queue(object):
         jobs = self.receive_jobs(max_messages=1, wait_time=wait_time)
         return jobs[0] if jobs else None
 
-    def delete_job(self, handle: str) -> dict:
+    def delete_job(self, handle: str) -> Dict:
         """delete a job by the message handle"""
         return self._client.delete_message(
             QueueUrl=self._queue_url, ReceiptHandle=handle
