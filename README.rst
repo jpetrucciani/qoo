@@ -50,7 +50,7 @@ Basic Usage
    import qoo
 
    # list SQS queue names
-   qoo.list()
+   qoo.list_queues()
 
    # get an existing queue
    queue = qoo.get("$QUEUE_NAME")

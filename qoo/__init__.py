@@ -31,7 +31,7 @@ def get(queue_name: str, **kwargs) -> Queue:
     return Queue(queue_name, **kwargs)
 
 
-def list(region: str = "", verbose: bool = False) -> List[str]:
+def list_queues(region: str = "", verbose: bool = False) -> List[str]:
     """
     list all queues in the default or given region
     :note: this will only list up to 1000 queue names

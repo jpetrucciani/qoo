@@ -9,7 +9,7 @@ from qoo.utils import jsond, jsonl
 from typing import Dict, List, Optional
 
 
-class Job(object):
+class Job:
     """a single unit of work"""
 
     def __init__(self, sqs_message: dict, queue: "Queue") -> None:
@@ -53,7 +53,7 @@ class Job(object):
         return self._md5 == checksum
 
 
-class Queue(object):
+class Queue:
     """sqs queue"""
 
     def __init__(

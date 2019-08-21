@@ -28,7 +28,7 @@ pylint:
     max-branches: 50
     max-statements: 180
     max-parents: 10
-    max-attributes: 10
+    max-attributes: 22
     min-public-methods: 0
     max-public-methods: 20
     max-module-lines: 2000
@@ -76,3 +76,4 @@ pep257:
     - D401
     - D404
     - D403
+    - D415

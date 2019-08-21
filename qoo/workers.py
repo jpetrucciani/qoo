@@ -4,7 +4,7 @@ worker class - not yet used
 from time import sleep
 
 
-class Worker(object):
+class Worker:
     """worker class"""
 
     def __init__(self, queues):
