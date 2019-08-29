@@ -4,7 +4,8 @@ util functions for qoo
 import datetime
 import json
 import re
-from typing import Any, Mapping
+import uuid
+from typing import Any, Iterator, List, Mapping
 
 
 FIRST_CAP = re.compile("(.)([A-Z][a-z]+)")
@@ -14,6 +15,11 @@ ALL_CAP = re.compile("([a-z0-9])([A-Z])")
 json.JSONEncoder.default = lambda self, obj: (  # type: ignore
     obj.isoformat() if isinstance(obj, datetime.datetime) else None
 )
+
+
+def new_uuid() -> str:
+    """returns a fresh uuid"""
+    return str(uuid.uuid4())
 
 
 def jsonl(json_string: str) -> Mapping:
@@ -26,7 +32,7 @@ def jsond(obj: Mapping, **kwargs: Any) -> str:
     return json.dumps(obj, **kwargs)
 
 
-def snakeify(text: str) -> str:
-    """camelCase to snake_case"""
-    first_string = FIRST_CAP.sub(r"\1_\2", text)
-    return ALL_CAP.sub(r"\1_\2", first_string).lower()
+def chunk(items: List, size: int = 10) -> Iterator[List]:
+    """chunk a list into n lists of $size"""
+    for x in range(0, len(items), size):
+        yield items[x : x + size]

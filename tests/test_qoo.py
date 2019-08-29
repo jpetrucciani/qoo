@@ -67,6 +67,68 @@ def test_can_send_job(queue):
     assert len(queue) > 0
 
 
+def test_can_send_batch_jobs(queue):
+    """test that we can send many jobs into the queue"""
+    responses = queue.send_batch(
+        [
+            {"job": 0, "message": "test 0"},
+            {"job": 1, "message": "test 1"},
+            {"job": 2, "message": "test 2"},
+            {"job": 3, "message": "test 3"},
+            {"job": 4, "message": "test 4"},
+            {"job": 5, "message": "test 5"},
+            {"job": 6, "message": "test 6"},
+            {"job": 7, "message": "test 7"},
+            {"job": 8, "message": "test 8"},
+            {"job": 9, "message": "test 9"},
+            {"job": 10, "message": "test 10"},
+            {"job": 11, "message": "test 11"},
+            {"job": 12, "message": "test 12"},
+            {"job": 13, "message": "test 13"},
+            {"job": 14, "message": "test 14"},
+            {"job": 15, "message": "test 15"},
+            {"job": 16, "message": "test 16"},
+            {"job": 17, "message": "test 17"},
+            {"job": 18, "message": "test 18"},
+            {"job": 19, "message": "test 19"},
+            {"job": 20, "message": "test 20"},
+        ]
+    )
+    assert len(queue) == 21
+    assert len(responses["Successful"]) == 21
+
+    # send as list of strings
+    responses = queue.send_batch(
+        [
+            "this",
+            "is",
+            "an",
+            "example",
+            "of",
+            "sending",
+            "batch",
+            "messages",
+            "as",
+            "a",
+            "list",
+            "of",
+            "strings",
+        ]
+    )
+    assert len(queue) == 34
+    assert len(responses["Successful"]) == 13
+    jobs = queue.receive_jobs(max_messages=10)
+    assert len(jobs) == 10
+    assert "message" in jobs[0]
+    assert jobs[0].job == 0
+    jobs = queue.receive_jobs(max_messages=10)
+    assert len(jobs) == 10
+    jobs = queue.receive_jobs(max_messages=10)
+    assert len(jobs) == 10
+    jobs = queue.receive_jobs(max_messages=10)
+    assert len(jobs) == 4
+
+
 def test_can_send_and_receive_job(queue):
     """test that we can send a job into the queue, and pull it back out"""
     queue.send(info="test_job")
@@ -76,6 +138,12 @@ def test_can_send_and_receive_job(queue):
     assert job.md5_matches
     assert job.approximate_receive_count == 1
     assert job.elapsed > 0.0
+
+
+def test_can_purge_queue(queue_with_job):
+    """test that we can purge a queue"""
+    queue_with_job.purge()
+    assert len(queue_with_job) == 0
 
 
 def test_can_delete_job(queue_with_job):

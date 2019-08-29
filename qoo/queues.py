@@ -5,8 +5,12 @@ import boto3
 import os
 import time
 import hashlib
-from qoo.utils import jsond, jsonl
-from typing import Dict, List, Optional
+import json
+from qoo.utils import chunk, jsond, jsonl, new_uuid
+from typing import Dict, List, Optional, Union
+
+
+MAX_MESSAGES = 10
 
 
 class Job:
@@ -18,7 +22,12 @@ class Job:
         self._data = sqs_message
         self._md5 = self._data["MD5OfBody"]
         self._id = self._data["MessageId"]
-        self._body = jsonl(self._data["Body"])
+        try:
+            self._body = jsonl(self._data["Body"])
+            for key in self._body:
+                setattr(self, key, self._body[key])
+        except json.decoder.JSONDecodeError:
+            self._body = self._data["Body"]
         self._attributes = self._data["Attributes"]
         self._sent_at = float(self._attributes["SentTimestamp"]) / 1000
         self._received_at = float(time.time())
@@ -26,9 +35,15 @@ class Job:
         self.approximate_receive_count = int(
             self._attributes["ApproximateReceiveCount"]
         )
-        for key in self._body:
-            setattr(self, key, self._body[key])
         self._handle = self._data["ReceiptHandle"]
+
+    def __contains__(self, key: str) -> bool:
+        """check if the given key exists in this job"""
+        return key in dir(self)
+
+    def __eq__(self, other: "Job") -> bool:
+        """check if this Job is equal to another"""
+        return self._handle == other._handle
 
     def __str__(self) -> str:
         """return a human-friendly object representation"""
@@ -37,10 +52,6 @@ class Job:
     def __repr__(self) -> str:
         """repr"""
         return self.__str__()
-
-    def __del__(self) -> Dict:
-        """del keyword for the job"""
-        return self.delete()
 
     def delete(self) -> Dict:
         """delete this object"""
@@ -56,6 +67,9 @@ class Job:
 class Queue:
     """sqs queue"""
 
+    SUCCESS = "Successful"
+    FAILED = "Failed"
+
     def __init__(
         self,
         name: str,
@@ -64,11 +78,13 @@ class Queue:
         aws_secret_access_key: str = "",
         max_messages: int = 1,
         wait_time: int = 10,
+        async_send: bool = False,
     ) -> None:
         """queue constructor"""
         self.name = name
         self._max_messages = max_messages
         self._wait_time = wait_time
+        self._async = async_send
         self._region_name = region_name or os.environ.get("AWS_DEFAULT_REGION")
         self._aws_access_key_id = aws_access_key_id or os.environ.get(
             "AWS_ACCESS_KEY_ID"
@@ -144,6 +160,47 @@ class Queue:
         )
         return response["MessageId"]
 
+    def send_batch(
+        self,
+        raw_jobs: List[Union[Dict, str]],
+        delay_seconds: int = 0,
+        auto_metadata: bool = True,
+    ) -> List[Dict]:
+        """
+        send a batch of jobs to the queue, chunked into 10s
+
+        accepts:
+            a list of message bodies
+            a list of dicts to json.dumps into message bodies
+        """
+        jobs = raw_jobs
+        successful = []
+        failed = []
+
+        # if default, treat each list item as just the message body
+        if auto_metadata:
+            jobs = [
+                {
+                    "Id": new_uuid(),
+                    "MessageBody": x if isinstance(x, str) else jsond(x),
+                    "DelaySeconds": delay_seconds,
+                }
+                for x in raw_jobs
+            ]
+
+        # send in batches of 10
+        for job_batch in chunk(jobs, size=MAX_MESSAGES):
+            response = self._client.send_message_batch(
+                QueueUrl=self._queue_url, Entries=job_batch
+            )
+            if Queue.SUCCESS in response:
+                successful.extend(response[Queue.SUCCESS])
+            if Queue.FAILED in response:
+                failed.extend(response[Queue.FAILED])
+
+        # return the list of successful and failed jobs
+        return {Queue.SUCCESS: successful, Queue.FAILED: failed}
+
     def receive_jobs(
         self,
         max_messages: int = None,
@@ -151,9 +208,10 @@ class Queue:
         attribute_names: str = "All",
     ) -> List[Job]:
         """receive a list of jobs from the queue"""
+        num_messages = max_messages if max_messages else self._max_messages
         jobs = self._client.receive_message(
             QueueUrl=self._queue_url,
-            MaxNumberOfMessages=max_messages if max_messages else self._max_messages,
+            MaxNumberOfMessages=num_messages,
             WaitTimeSeconds=wait_time if wait_time else self._wait_time,
             AttributeNames=[attribute_names],
         )
@@ -171,3 +229,7 @@ class Queue:
         return self._client.delete_message(
             QueueUrl=self._queue_url, ReceiptHandle=handle
         )
+
+    def purge(self) -> None:
+        """purge the queue"""
+        self._client.purge_queue(QueueUrl=self._queue_url)

@@ -75,7 +75,6 @@ Basic Usage
    job.user_id      # the string "test_user"
 
    # delete the job from the SQS queue
-   del job
    job.delete()
 
 
