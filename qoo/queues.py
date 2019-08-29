@@ -41,9 +41,9 @@ class Job:
         """check if the given key exists in this job"""
         return key in dir(self)
 
-    def __eq__(self, other: "Job") -> bool:
+    def __eq__(self, other: object) -> bool:
         """check if this Job is equal to another"""
-        return self._handle == other._handle
+        return isinstance(other, Job) and self._handle == other._handle
 
     def __str__(self) -> str:
         """return a human-friendly object representation"""
@@ -165,7 +165,7 @@ class Queue:
         raw_jobs: List[Union[Dict, str]],
         delay_seconds: int = 0,
         auto_metadata: bool = True,
-    ) -> List[Dict]:
+    ) -> Dict:
         """
         send a batch of jobs to the queue, chunked into 10s
 
@@ -174,8 +174,8 @@ class Queue:
             a list of dicts to json.dumps into message bodies
         """
         jobs = raw_jobs
-        successful = []
-        failed = []
+        successful = []  # type: List
+        failed = []  # type: List
 
         # if default, treat each list item as just the message body
         if auto_metadata:

@@ -13,7 +13,7 @@ REQUIRED = ["boto3"]
 
 setup(
     name="qoo",
-    version="0.0.3",
+    version="0.0.4",
     description=("A simple library for interacting with Amazon SQS."),
     long_description=LONG_DESCRIPTION,
     author="Jacobi Petrucciani",
