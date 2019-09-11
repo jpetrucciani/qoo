@@ -1,12 +1,19 @@
 """
-custom qoo errors
+@author jacobi petrucciani
+@desc custom qoo errors
 """
 
 
 class QooException(Exception):
-    """base qoo exception class"""
+    """
+    @desc base qoo exception class
+    """
 
     def __init__(self, *args, **kwargs):  # type: ignore
+        """
+        @cc 2
+        @desc QooException constructor
+        """
         extra = ""
         if args:
             extra = '\n| extra info: "{extra}"'.format(extra=args[0])

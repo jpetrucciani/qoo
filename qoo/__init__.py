@@ -1,5 +1,6 @@
 """
-qoo module
+@author jacobi petrucciani
+@desc qoo module
 """
 import boto3
 import os
@@ -12,7 +13,12 @@ AWS_DEFAULT_REGION = "us-east-1"
 
 
 def _client(region: str = ""):
-    """returns a boto3 sqs client"""
+    """
+    @cc 1
+    @desc generate a boto3 sqs client
+    @arg region: the AWS region to connect to
+    @ret a boto3 sqs client
+    """
     region_name = region or os.environ.get("AWS_DEFAULT_REGION", AWS_DEFAULT_REGION)
     return boto3.client("sqs", region_name=region_name)
 
@@ -20,7 +26,13 @@ def _client(region: str = ""):
 def login(
     access_key_id: str, secret_access_key: str, region: str = AWS_DEFAULT_REGION
 ) -> None:
-    """sets environment variables for boto3."""
+    """
+    @cc 1
+    @desc sets environment variables for boto3.
+    @arg access_key_id: AWS access key id
+    @arg secret_access_key:  AWS secret access key
+    @arg region: AWS region to login to
+    """
     os.environ["AWS_ACCESS_KEY_ID"] = access_key_id
     os.environ["AWS_SECRET_ACCESS_KEY"] = secret_access_key
     os.environ["AWS_DEFAULT_REGION"] = region

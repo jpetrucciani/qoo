@@ -20,6 +20,11 @@ qoo: a simple SQS client
    :alt: Python 3.5+ supported
 
 
+.. image:: https://img.shields.io/badge/docstyle-archives-lightblue.svg
+   :target: https://github.com/jpetrucciani/archives
+   :alt: Documentation style: archives
+
+
 **qoo** is a very simple Amazon SQS client, written in Python. It
 aims to be much more straight-forward to use than boto3, and specializes
 only in Amazon SQS, ignoring the rest of the AWS ecosystem.

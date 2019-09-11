@@ -1,5 +1,6 @@
 """
-util functions for qoo
+@author jacobi petrucciani
+@desc util functions for qoo
 """
 import datetime
 import json
@@ -18,21 +19,41 @@ json.JSONEncoder.default = lambda self, obj: (  # type: ignore
 
 
 def new_uuid() -> str:
-    """returns a fresh uuid"""
+    """
+    @cc 1
+    @desc generate a new uuid with the built in uuid library
+    @ret a fresh uuid
+    """
     return str(uuid.uuid4())
 
 
 def jsonl(json_string: str) -> Mapping:
-    """loads a dict from a given json string"""
+    """
+    @cc 1
+    @desc loads a dict from a given json string
+    @arg json_string: the json string to parse
+    @ret a mapping pulled from the json
+    """
     return json.loads(json_string)
 
 
 def jsond(obj: Mapping, **kwargs: Any) -> str:
-    """performs a json dump with our given patch"""
+    """
+    @cc 1
+    @desc performs a json dump with our given patch
+    @arg obj: the dict/list to dump into a string
+    @ret a json encoded string
+    """
     return json.dumps(obj, **kwargs)
 
 
 def chunk(items: List, size: int = 10) -> Iterator[List]:
-    """chunk a list into n lists of $size"""
+    """
+    @cc 2
+    @desc chunk a list into n lists of a certain size
+    @arg items: a list of items to chunk
+    @arg size: the size of the chunked lists
+    @ret an iterator of lists
+    """
     for x in range(0, len(items), size):
         yield items[x : x + size]
