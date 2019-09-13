@@ -1,5 +1,6 @@
 """
-pytest the qoo functionality
+@author jacobi petrucciani
+@desc pytest the qoo functionality
 """
 import json
 import os
@@ -10,7 +11,7 @@ import time
 from moto import mock_sqs
 
 
-def dbg(text):
+def dbg(text) -> None:
     """debug printer for tests"""
     if isinstance(text, dict):
         text = json.dumps(text, sort_keys=True, indent=2)

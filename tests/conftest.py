@@ -1,5 +1,6 @@
 """
-qoo pytest configuration
+@author jacobi petrucciani
+@desc qoo pytest configuration
 """
 import qoo
 import os
