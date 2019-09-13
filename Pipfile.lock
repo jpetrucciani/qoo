@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6f10985ae5de1f519d39df53ae46f4b44545836e752c1d48178b1771b3b4483d"
+            "sha256": "7ba723fbe36da5719c10b578feb16ab72ac0fd151a6a762cef90204711649c6d"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -76,9 +76,9 @@
     "develop": {
         "archives": {
             "hashes": [
-                "sha256:6dcecc0309233eabf80f764e12b499dd8af2a064eeb6794f53f1221a6f71924a"
+                "sha256:c8f7a759cd3bd0e34bf75e64ba27800a4d5d9169ceab3676438ca1b6aad3d981"
             ],
-            "version": "==0.9"
+            "version": "==0.12"
         },
         "asn1crypto": {
             "hashes": [
