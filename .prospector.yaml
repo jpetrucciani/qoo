@@ -20,6 +20,7 @@ pylint:
     - no-self-use
     - unused-argument
     - wrong-import-order
+    - protected-access
 
   options:
     max-args: 10
@@ -40,6 +41,7 @@ mccabe:
 
 pep8:
   disable:
+    - E203
     - N802
     - N807
     - W503

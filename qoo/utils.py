@@ -55,5 +55,5 @@ def chunk(items: List, size: int = 10) -> Iterator[List]:
     @arg size: the size of the chunked lists
     @ret an iterator of lists
     """
-    for x in range(0, len(items), size):
-        yield items[x : x + size]
+    for index in range(0, len(items), size):
+        yield items[index : index + size]
