@@ -5,7 +5,7 @@ pip setup file
 from setuptools import setup
 
 
-with open("README.rst") as readme:
+with open("README.md") as readme:
     LONG_DESCRIPTION = readme.read()
 
 
@@ -16,6 +16,7 @@ setup(
     version="0.0.4",
     description=("A simple library for interacting with Amazon SQS."),
     long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
     author="Jacobi Petrucciani",
     author_email="jacobi@mimirhq.com",
     url="https://github.com/jpetrucciani/qoo.git",
